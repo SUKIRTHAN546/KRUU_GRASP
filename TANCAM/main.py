@@ -40,7 +40,7 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("TANCAM\\model\\best.pt")
+model = YOLO("TANCAM\\TANCAM\\model\\best.pt")
 print("MODEL CLASSES:", model.names)
 
 if args.mode == "demo":
@@ -64,15 +64,18 @@ while True:
 
     flags = abstract_detection(persons)
     h,w,_=frame.shape
+    all_violations = []
     for p in persons:
         zone = get_person_zone(p,w)
         print("ZONE:", zone)
+        at_height = is_person_at_height(p["bbox"], h)
+
+        violations = evaluate_ppe_rules(p, zone, at_height)
+        all_violations.extend(violations)
     image_height = frame.shape[0]
     print(frame.shape)
-    at_height = is_person_at_height(flags["person_box"], image_height)
-
-    violations = evaluate_ppe_rules(flags, at_height)
-    alert = decide_alert_action(violations)
+    
+    alert = decide_alert_action(all_violations)
     print("----- FRAME DEBUG -----")
     print("FLAGS:", flags)
     print("AT_HEIGHT:", at_height)
@@ -93,9 +96,10 @@ while True:
             )
             print("✅ LOGGED:", alert, violations)
             violation_counter = 0
-    else:
+    if not all_violations:
         violation_counter = 0
         LAST_VIOLATION = None
+
 
     print("PERSONS:", persons)
     print("FLAGS:", flags)

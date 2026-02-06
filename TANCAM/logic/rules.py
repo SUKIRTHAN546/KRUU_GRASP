@@ -1,29 +1,23 @@
 # rules.py
 
 SAFE = "SAFE"
+HIGH_RISK = "HIGH_RISK"
+
 NO_HELMET = "NO_HELMET"
 NO_HARNESS = "NO_HARNESS"
-CRITICAL = "CRITICAL_VIOLATION"
-def evaluate_ppe_rules(flags, at_height):
-    """
-    Applies PPE safety rules and returns violation status
-    """
 
+WARNING = "WARNING"
+CRITICAL = "CRITICAL"
+
+def evaluate_ppe_rules(person, zone, at_height):
     violations = []
 
-    # Rule 1: Helmet rule (always applicable)
-    if flags["person"] and not flags["helmet"]:
-        violations.append(NO_HELMET)
+    if zone == HIGH_RISK and not person["helmet"]:
+        violations.append((WARNING, NO_HELMET))
 
-    # Rule 2: Harness rule (only at height)
-    if flags["person"] and at_height and not flags["harness"]:
-        violations.append(NO_HARNESS)
-
-    # Rule 3: Critical case
-    if flags["person"] and at_height and (NO_HARNESS in violations or NO_HELMET in violations):
-        violations.append(CRITICAL)
-
-    if not violations:
-        return [SAFE]
+    if at_height and not person["harness"]:
+        violations.append((CRITICAL, NO_HARNESS))
 
     return violations
+
+
