@@ -41,7 +41,7 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("KRUU\\TANCAM\\TANCAM\\model\\best.pt")
+model = YOLO("TANCAM\\TANCAM\\model\\best.pt")
 print("MODEL CLASSES:", model.names)
 
 if args.mode == "demo":
@@ -96,6 +96,12 @@ while True:
                 color = (0,0,255)  # red
 
         cv2.rectangle(frame, (x1,y1), (x2,y2), color, 2)
+        # Zone labels
+    cv2.putText(frame, "SAFE ZONE", (10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+    cv2.putText(frame, "HIGH RISK ZONE", (int(0.6*w)+10, 30),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,0,255), 2)
+
     
     if alert != "INFO":
         reasons = ", ".join([v[1] for v in all_violations])
@@ -150,7 +156,16 @@ while True:
         status_text = "CRITICAL ALERT"
         color = (0, 0, 255)
 
-    
+    # ---- LEGEND ----
+    cv2.putText(frame, "SAFE", (w-180, 30), 
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,0), 2)
+
+    cv2.putText(frame, "WARNING", (w-180, 55),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,255), 2)
+
+    cv2.putText(frame, "CRITICAL", (w-180, 80),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,0,255), 2)
+
     cv2.imshow("PPE Monitor", frame)        
     
     

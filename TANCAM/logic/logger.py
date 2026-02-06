@@ -2,7 +2,7 @@ import csv
 import os
 from datetime import datetime
 
-LOG_FILE = "KRUU\\TANCAM\\TANCAM\\logs\\violations.csv"
+LOG_FILE = "TANCAM\\TANCAM\\logs\\violations.csv"
 
 def log_violation(camera_id, violations, severity):
     """
