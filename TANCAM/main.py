@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 from matplotlib.pylab import rint
 from ultralytics import YOLO
 import argparse
@@ -40,7 +41,7 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("TANCAM\\TANCAM\\model\\best.pt")
+model = YOLO("KRUU\\TANCAM\\TANCAM\\model\\best.pt")
 print("MODEL CLASSES:", model.names)
 
 if args.mode == "demo":
@@ -64,6 +65,14 @@ while True:
 
     flags = abstract_detection(persons)
     h,w,_=frame.shape
+    
+
+# SAFE zone (green)
+    cv2.rectangle(frame, (0, 0), (int(0.6*w), h), (0,255,0), 2)
+
+# HIGH RISK zone (red)
+    cv2.rectangle(frame, (int(0.6*w), 0), (w, h), (0,0,255), 2)
+
     all_violations = []
     for p in persons:
         zone = get_person_zone(p,w)
@@ -72,14 +81,41 @@ while True:
 
         violations = evaluate_ppe_rules(p, zone, at_height)
         all_violations.extend(violations)
-    image_height = frame.shape[0]
-    print(frame.shape)
     
     alert = decide_alert_action(all_violations)
+
+    for p in persons:
+        x1, y1, x2, y2 = p["bbox"]
+
+
+        color = (0,255,0)  # default safe
+
+        if alert == "WARNING":
+                color = (0,255,255)  # yellow
+        elif alert == "CRITICAL":
+                color = (0,0,255)  # red
+
+        cv2.rectangle(frame, (x1,y1), (x2,y2), color, 2)
+    
+    if alert != "INFO":
+        reasons = ", ".join([v[1] for v in all_violations])
+
+        text = f"{alert}: {reasons}"
+
+        cv2.putText(
+            frame,
+            text,
+            (20, 40),                  # top-left
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0,0,255),                 # red text
+            3
+        )
+
+    
     print("----- FRAME DEBUG -----")
     print("FLAGS:", flags)
-    print("AT_HEIGHT:", at_height)
-    print("VIOLATIONS:", violations)
+    print("ALL VIOLATIONS:", all_violations)
     print("ALERT:", alert)
     print("------------------------")
     if alert != "INFO":
@@ -91,10 +127,10 @@ while True:
         if violation_counter >= 3:
             log_violation(
             camera_id=camera_id,
-            violations=violations,
+            violations=all_violations,
             severity=alert
             )
-            print("✅ LOGGED:", alert, violations)
+            print("✅ LOGGED:", alert, all_violations)
             violation_counter = 0
     if not all_violations:
         violation_counter = 0
@@ -114,19 +150,9 @@ while True:
         status_text = "CRITICAL ALERT"
         color = (0, 0, 255)
 
-    annotated_frame = model(frame, conf=0.15)[0].plot()
-    cv2.putText(
-        annotated_frame,
-        status_text,
-        (30, 40),
-        cv2.FONT_HERSHEY_SIMPLEX,
-        1,
-        color,
-        2
-    )
-
     
-    cv2.imshow("PPE Monitoring System", annotated_frame)
+    cv2.imshow("PPE Monitor", frame)        
+    
     
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
