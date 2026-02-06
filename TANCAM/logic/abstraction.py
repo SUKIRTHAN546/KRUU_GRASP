@@ -1,11 +1,7 @@
 # abstraction.py
 
-CLASS_MAP = {
-    "Person": False,
-    "Helmet": False,
-    "Harness": False
-}
-def abstract_detection(results,model):
+
+def abstract_detection(persons):
     flags = {
         "person": False,
         "helmet": False,
@@ -13,18 +9,14 @@ def abstract_detection(results,model):
         "person_box": None
     }
 
-    for box, cls in zip(results[0].boxes.xyxy,
-                        results[0].boxes.cls):
-        class_name = model.names[int(cls)]
+    if not persons:
+        return flags
+    
+    person = persons[0]
+    flags["person"] = True
+    flags["helmet"] = person["helmet"]  
+    flags["harness"] = person["harness"]
+    flags["person_box"] = person["bbox"]
 
-        if class_name == "Person":
-            flags["person"] = True
-            flags["person_box"] = box
-
-        elif class_name == "Helmet":
-            flags["helmet"] = True
-
-        elif class_name == "Harness":
-            flags["harness"] = True
 
     return flags

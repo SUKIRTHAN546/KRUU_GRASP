@@ -3,7 +3,7 @@ from matplotlib.pylab import rint
 from ultralytics import YOLO
 import argparse
 from logic.logger import log_violation
-
+from logic.perception import detect_ppe
 from logic.abstraction import abstract_detection
 from logic.context import is_person_at_height
 from logic.rules import evaluate_ppe_rules
@@ -39,7 +39,7 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("model/best.pt")
+model = YOLO("KRUU\TANCAM\TANCAM\model\\best.pt")
 
 if args.mode == "demo":
     cap = cv2.VideoCapture(0)   
@@ -58,9 +58,9 @@ while True:
     if not ret:
         break
 
-    results = model(frame, conf=0.15)
+    persons = detect_ppe(frame, model)
 
-    flags = abstract_detection(results, model)
+    flags = abstract_detection(persons)
     image_height = frame.shape[0]
     at_height = is_person_at_height(flags["person_box"], image_height)
 
@@ -90,7 +90,8 @@ while True:
         violation_counter = 0
         LAST_VIOLATION = None
 
-
+    print("PERSONS:", persons)
+    print("FLAGS:", flags)
 
     if alert == "INFO":
         status_text = "SAFE"
@@ -102,7 +103,7 @@ while True:
         status_text = "CRITICAL ALERT"
         color = (0, 0, 255)
 
-    annotated_frame = results[0].plot()
+    annotated_frame = model(frame, conf=0.15)[0].plot()
     cv2.putText(
         annotated_frame,
         status_text,
@@ -113,6 +114,7 @@ while True:
         2
     )
 
+    
     cv2.imshow("PPE Monitoring System", annotated_frame)
     
 
