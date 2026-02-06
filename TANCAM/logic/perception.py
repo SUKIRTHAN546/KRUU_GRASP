@@ -3,7 +3,8 @@
 def detect_ppe(frame, model):
     
 
-    results = model(frame, conf=0.15)
+    results = model(frame, conf=0.01)
+    print("RAW BOX COUNT:", len(results[0].boxes))
 
     persons = []
 

@@ -8,6 +8,7 @@ from logic.abstraction import abstract_detection
 from logic.context import is_person_at_height
 from logic.rules import evaluate_ppe_rules
 from logic.alerts import decide_alert_action
+from logic.context import get_person_zone
 
 violation_counter = 0
 LAST_VIOLATION = None
@@ -39,7 +40,8 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("KRUU\TANCAM\TANCAM\model\\best.pt")
+model = YOLO("TANCAM\\model\\best.pt")
+print("MODEL CLASSES:", model.names)
 
 if args.mode == "demo":
     cap = cv2.VideoCapture(0)   
@@ -61,7 +63,12 @@ while True:
     persons = detect_ppe(frame, model)
 
     flags = abstract_detection(persons)
+    h,w,_=frame.shape
+    for p in persons:
+        zone = get_person_zone(p,w)
+        print("ZONE:", zone)
     image_height = frame.shape[0]
+    print(frame.shape)
     at_height = is_person_at_height(flags["person_box"], image_height)
 
     violations = evaluate_ppe_rules(flags, at_height)
