@@ -2,7 +2,7 @@ import csv
 import os
 from datetime import datetime
 
-LOG_FILE = "C:\\Users\\sukir\\OneDrive\\Documents\\TANCAM PROJECT\\TANCAM\\logs\\violations.csv"
+LOG_FILE = "TANCAM\\TANCAM\\logs\\violations.csv"
 
 def log_violation(camera_id, violations, severity):
     """
@@ -30,6 +30,6 @@ def log_violation(camera_id, violations, severity):
         writer.writerow([
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             camera_id,
-            ",".join(violations),
+            ", ".join([v[1] for v in violations]),
             severity
         ])

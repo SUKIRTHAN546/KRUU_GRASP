@@ -1,20 +1,13 @@
-
-
-INFO = "INFO"
-WARNING = "WARNING"
-CRITICAL_ALERT = "CRITICAL_ALERT"
-
 def decide_alert_action(violations):
-    """
-    Decides alert severity and action based on violations
-    """
+    if not violations:
+        return "INFO"
 
-    if "CRITICAL_VIOLATION" in violations:
-        return CRITICAL_ALERT
+    severities = [v[0] for v in violations]
 
-    if "NO_HELMET" in violations or "NO_HARNESS" in violations:
-        return WARNING
+    if "CRITICAL" in severities:
+        return "CRITICAL"
+    if "WARNING" in severities:
+        return "WARNING"
 
-    
-    return INFO
+    return "INFO"
 

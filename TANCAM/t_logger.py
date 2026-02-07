@@ -1,9 +1,5 @@
-from logic.logger import log_violation
+from ultralytics import YOLO
 
-log_violation(
-    camera_id="TEST_CAM",
-    violations=["TEST_VIOLATION"],
-    severity="TEST"
-)
+model = YOLO("C:\\Users\\sukir\\OneDrive\\Documents\\TANCAM PROJECT\\KRUU\\TANCAM\\TANCAM\\model\\best.pt")
 
-print("DONE")
+print(model.names)
