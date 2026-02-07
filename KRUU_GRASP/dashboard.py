@@ -16,7 +16,7 @@ with col2:
 
 # ---- INIT VIDEO ONCE ----
 if "cap" not in st.session_state:
-    st.session_state.cap = cv2.VideoCapture("TANCAM\\TANCAM\\videos\\test.mp4")  # or 0
+    st.session_state.cap = cv2.VideoCapture("KRUU_GRASP\\KRUU_GRASP\\videos\\test.mp4")  # or 0
 st.caption("Green = Safe Zone|Red = High Risk Zone")
 cap = st.session_state.cap
 
