@@ -41,7 +41,7 @@ elif args.mode == "video":
     cap = cv2.VideoCapture(args.video_path)
     camera_id = "CAM_VIDEO"
  
-model = YOLO("TANCAM\\TANCAM\\model\\best.pt")
+model = YOLO("KRUU_GRASP\\KRUU_GRASP\\model\\best.pt")
 print("MODEL CLASSES:", model.names)
 def build_contextual_reason(violation, zone, at_height):
     reasons = []
