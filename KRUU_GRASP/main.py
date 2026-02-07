@@ -123,7 +123,7 @@ def process_frame(frame):
 
     return frame, alert, all_violations
 if __name__ == "__main__":
-    cap =cv2.VideoCapture("TANCAM\\TANCAM\\videos\\test.mp4")  # or "path/to/video.mp4"
+    cap =cv2.VideoCapture("KRUU\\KRUU_GRASP\\videos\\test.mp4")  # or "path/to/video.mp4"
     while True:
         ret, frame = cap.read()
         if not ret:
